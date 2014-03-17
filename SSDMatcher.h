@@ -11,23 +11,21 @@ public:
 		m_reductionFactor = reductionFactor;
 	}
 
-	// on fait somme de la vleur absolue des différences
+	// on fait somme de la valeur absolue des différences
 	virtual double proximity(ImagePtr a, ImagePtr b)
 	{
 		Image im2 = (*a - *b);
 		im2.abs();
+/*		cimg_library::CImgDisplay disp = cimg_library::CImgDisplay(im2, "Diff", 1);
+		cimg_library::CImgDisplay dispa = cimg_library::CImgDisplay(*a, "Test A", 1);
+		cimg_library::CImgDisplay dispb = cimg_library::CImgDisplay(*b, "Test B", 1);
+		while (!disp.is_closed()) disp.wait();*/
 		return im2.sum();
 	}
 
-	// Warning : Will "optimize" every image in lim
-	virtual void Initialize(ListOfImagesPtr lim)
-	{
-		ListOfImages::iterator im;
-		for (im = lim->begin(); im != lim->end(); im++)
-		{
-			(*im)->resize( (*im)->width() / m_reductionFactor, (*im)->height() / m_reductionFactor, 1, 1, 1);
-		}
-		m_listOfImages = lim;
+	void InitializeOneImage(ImagePtr im) {
+		im->RGBtoLab();
+		im->resize(im->width() / m_reductionFactor, im->height() / m_reductionFactor, 1, 3, 1);
 	}
 
 protected:

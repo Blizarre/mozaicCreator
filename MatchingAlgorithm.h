@@ -9,22 +9,36 @@ public:
 
 	MatchingAlgorithm() { };
 
-	virtual void Initialize(ListOfImagesPtr lim) = 0;
+	// Warning : Will "optimize" every image in lim
+	virtual void Initialize(ListOfImagesPtr lim)
+	{
+		ListOfImages::iterator im;
+		for (im = lim->begin(); im != lim->end(); im++)
+		{
+			InitializeOneImage(im->second);
+		}
+		m_listOfImages = lim;
+	}
+
+	virtual void InitializeOneImage(ImagePtr lim) = 0;
 
 	virtual double proximity(ImagePtr a, ImagePtr b) = 0;
 
-	virtual ImagePtr FindBestMatch(ImagePtr imRef)
+	virtual std::wstring FindBestMatch(ImagePtr imRef)
 	{
+		
+		InitializeOneImage(imRef);
+
 		double currentBestScore = 0;
 		ListOfImages::iterator im;
-		ImagePtr bestImage;
-		double grade, bestGrade = 0;
+		std::wstring bestImage;
+		double grade, bestGrade = std::numeric_limits<double>::max();
 		for (im = m_listOfImages->begin(); im != m_listOfImages->end(); im++)
 		{
-			grade = proximity(*im, imRef);
-			if (grade > bestGrade)
+			grade = proximity(im->second, imRef);
+			if (grade < bestGrade)
 			{
-				bestImage = *im;
+				bestImage = im->first;
 				bestGrade = grade;
 			}
 		}

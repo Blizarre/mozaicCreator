@@ -1,12 +1,14 @@
 #pragma once
 
-#include "vector"
+#include <map>
+#include <vector>
+#include <string>
 #include "CImg.h"
 
 
-typedef cimg_library::CImg<unsigned char> Image;
+typedef cimg_library::CImg<double> Image;
 typedef Image* ImagePtr;
 
-typedef std::vector<ImagePtr> ListOfImages;
+typedef std::map<std::wstring, ImagePtr> ListOfImages;
 typedef ListOfImages* ListOfImagesPtr;
 

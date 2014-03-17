@@ -1,41 +1,51 @@
 #pragma once
 
-#include <map>
-#include <memory>
 #include "SSDMatcher.h"
 #include "MatchingAlgorithm.h"
 
-enum ConfigKey
-{
-	INPUT_IMAGE,
-	OUTPUT_IMAGE,
-	SOURCE_DIRECTORY,
-	SSD_REDUCTION_FACTOR
-};
-
-typedef  std::pair<ConfigKey, std::string> KeyValue;
 
 typedef std::auto_ptr<MatchingAlgorithm> MatchingAlgorithmSPrt;
 
-class Configurator : public std::map<ConfigKey, std::string>
+// create the getter as well as the getter/setter
+#define PARAM(type, name) protected: type m_##name; void set##name(type t) { m_##name = t; }; public: type get##name() const { return m_##name; }
+
+
+class Configurator
 {
 public:
+
+	// Default constructor
 	Configurator()
 	{
-		this->insert(std::make_pair(ConfigKey::INPUT_IMAGE, std::string("reference.jpg")));
-
-		this->insert(std::make_pair(ConfigKey::OUTPUT_IMAGE, std::string("output.jpg")));
-		this->insert(std::make_pair(ConfigKey::SOURCE_DIRECTORY, std::string(".\\images")));
-		this->insert(std::make_pair(ConfigKey::SSD_REDUCTION_FACTOR, std::string("3")));
+		setReferenceImage(L"reference.bmp");
+		setOutputImage(L"output.bmp");
+		setDirectoryInputImages(L".\\images");
+		setReductionFactor(1);
 	}
 	
+	// Command line constructor
+	void fromCommandLine(int argc, WCHAR* argv[])
+	{
+		if(argc != 4)
+			throw std::string("Error, usage is <refImage> <directory> <reductionCoefficient>");
+
+		setReferenceImage(argv[1]);
+		setDirectoryInputImages(argv[2]);
+		
+		setReductionFactor(_wtoi(argv[3]));
+		
+		if(getReductionFactor() == 0)
+			throw std::string("Error : SSD reduction factor invalid, must be > 0");
+	}
 	std::auto_ptr<MatchingAlgorithm> getMatchingAlgorithm()
 	{
-		int reductionFactor = atoi(this->at(ConfigKey::SSD_REDUCTION_FACTOR).c_str());
-		
-		if (reductionFactor <= 0)
-			reductionFactor = 1;
-
-		return std::auto_ptr<MatchingAlgorithm>(new SSDMatcher(reductionFactor));
+		return std::auto_ptr<MatchingAlgorithm>(new SSDMatcher(getReductionFactor()));
 	}
+
+protected:
+
+	PARAM(std::wstring, ReferenceImage);
+	PARAM(std::wstring, OutputImage);
+	PARAM(std::wstring, DirectoryInputImages);
+	PARAM(int,			ReductionFactor);
 };
