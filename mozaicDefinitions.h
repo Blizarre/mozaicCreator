@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <map>
 #include <vector>
 #include <string>
@@ -7,8 +8,8 @@
 
 
 typedef cimg_library::CImg<double> Image;
-typedef Image* ImagePtr;
+typedef std::shared_ptr<Image> ImageSPtr;
 
-typedef std::map<std::wstring, ImagePtr> ListOfImages;
-typedef ListOfImages* ListOfImagesPtr;
+typedef std::map<std::wstring, ImageSPtr> ListOfImages;
+typedef std::shared_ptr<ListOfImages> ListOfImagesSPtr;
 

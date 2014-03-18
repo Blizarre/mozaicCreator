@@ -4,7 +4,8 @@
 #include "MatchingAlgorithm.h"
 
 
-typedef std::auto_ptr<MatchingAlgorithm> MatchingAlgorithmSPrt;
+typedef std::shared_ptr<MatchingAlgorithm> MatchingAlgorithmSPrt;
+
 
 // create the getter as well as the getter/setter
 #define PARAM(type, name) protected: type m_##name; void set##name(type t) { m_##name = t; }; public: type get##name() const { return m_##name; }

@@ -12,7 +12,7 @@ public:
 	}
 
 	// on fait somme de la valeur absolue des différences
-	virtual double proximity(ImagePtr a, ImagePtr b)
+	virtual double proximity(ImageSPtr a, ImageSPtr b)
 	{
 		Image im2 = (*a - *b);
 		im2.abs();
@@ -23,7 +23,7 @@ public:
 		return im2.sum();
 	}
 
-	void InitializeOneImage(ImagePtr im) {
+	void InitializeOneImage(ImageSPtr im) {
 		im->RGBtoLab();
 		im->resize(im->width() / m_reductionFactor, im->height() / m_reductionFactor, 1, 3, 1);
 	}

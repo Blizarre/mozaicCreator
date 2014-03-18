@@ -1,4 +1,10 @@
 
+// detect memory leak
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+// end
+
 #include <string>
 #include <vector>
 #include "mozaicDefinitions.h"
@@ -41,15 +47,15 @@ std::string wstring2string(std::wstring wstr)
 	return std::string(wstr.begin(), wstr.end());
 }
 
-ListOfImagesPtr loadAllImages(std::vector<std::wstring> listOfFiles)
+ListOfImagesSPtr loadAllImages(std::vector<std::wstring> listOfFiles)
 {
-	ListOfImagesPtr lIm = new ListOfImages();
-	ImagePtr image;
+	ListOfImagesSPtr lIm(new ListOfImages());
+	ImageSPtr image;
 	std::vector<std::wstring>::iterator fIt;
 	for (fIt = listOfFiles.begin(); fIt != listOfFiles.end(); fIt++)
 	{
 		std::string fileName = wstring2string(*fIt);
-		image = new Image(fileName.c_str());
+		image = ImageSPtr(new Image(fileName.c_str()));
 		lIm->insert(std::make_pair(*fIt, image));
 	}
 	return lIm;
@@ -57,6 +63,8 @@ ListOfImagesPtr loadAllImages(std::vector<std::wstring> listOfFiles)
 
 int main(int argc, WCHAR* argv[])
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Configurator config;
 
 	std::cout << "Starting" << std::endl;
@@ -75,20 +83,20 @@ int main(int argc, WCHAR* argv[])
 
 	std::cout << "Loading images" << std::endl;
 
-	ListOfImagesPtr lIm = loadAllImages(FindAllFiles(config.getDirectoryInputImages() ));
+	ListOfImagesSPtr lIm = loadAllImages(FindAllFiles(config.getDirectoryInputImages()));
 
 	std::cout << lIm->size() << " images loaded" << std::endl;
 
 	algo->Initialize(lIm);
 
 	std::cout << "Initialization done" << std::endl;
-	
+
 	std::string refImName = wstring2string(config.getReferenceImage());
-	Image ref(refImName.c_str());
+	ImageSPtr ref( new Image(refImName.c_str()) );
 
 	std::cout << "Reference image loading done" << std::endl;
 
-	std::wstring bestMatch = algo->FindBestMatch(&ref);
+	std::wstring bestMatch = algo->FindBestMatch(ref);
 	std::string bestMatchImName = wstring2string(bestMatch);
 
 	std::cout << "Best match found" << std::endl;
@@ -99,5 +107,6 @@ int main(int argc, WCHAR* argv[])
 	while (!refDisp.is_closed() && !bestDisp.is_closed()) {
 		refDisp.wait();
 	}
+	
 	return 0;
 }

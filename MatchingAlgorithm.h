@@ -10,7 +10,7 @@ public:
 	MatchingAlgorithm() { };
 
 	// Warning : Will "optimize" every image in lim
-	virtual void Initialize(ListOfImagesPtr lim)
+	virtual void Initialize(ListOfImagesSPtr lim)
 	{
 		ListOfImages::iterator im;
 		for (im = lim->begin(); im != lim->end(); im++)
@@ -20,11 +20,11 @@ public:
 		m_listOfImages = lim;
 	}
 
-	virtual void InitializeOneImage(ImagePtr lim) = 0;
+	virtual void InitializeOneImage(ImageSPtr lim) = 0;
 
-	virtual double proximity(ImagePtr a, ImagePtr b) = 0;
+	virtual double proximity(ImageSPtr a, ImageSPtr b) = 0;
 
-	virtual std::wstring FindBestMatch(ImagePtr imRef)
+	virtual std::wstring FindBestMatch(ImageSPtr imRef)
 	{
 		
 		InitializeOneImage(imRef);
@@ -49,6 +49,6 @@ public:
 	virtual ~MatchingAlgorithm() {}
 
 protected:
-	ListOfImagesPtr m_listOfImages;
+	ListOfImagesSPtr m_listOfImages;
 };
 
