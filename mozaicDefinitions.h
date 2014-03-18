@@ -10,6 +10,6 @@
 typedef cimg_library::CImg<double> Image;
 typedef std::shared_ptr<Image> ImageSPtr;
 
-typedef std::map<std::wstring, ImageSPtr> ListOfImages;
+typedef std::map<std::string, ImageSPtr> ListOfImages;
 typedef std::shared_ptr<ListOfImages> ListOfImagesSPtr;
 

@@ -81,11 +81,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Benchmarking.h" />
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Configurator.h" />
+    <ClInclude Include="Filesystem.h" />
     <ClInclude Include="MatchingAlgorithm.h" />
     <ClInclude Include="mozaicDefinitions.h" />
-    <ClInclude Include="SSDMatcher.h" />
+    <ClInclude Include="Norm_LAB_SSDMatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

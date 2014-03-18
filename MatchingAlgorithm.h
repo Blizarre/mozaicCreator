@@ -15,23 +15,27 @@ public:
 		ListOfImages::iterator im;
 		for (im = lim->begin(); im != lim->end(); im++)
 		{
-			InitializeOneImage(im->second);
+			preprocessOneImage(im->second);
+		}
+		for (im = lim->begin(); im != lim->end(); im++)
+		{
+			NormalizeOneImage(im->second);
 		}
 		m_listOfImages = lim;
 	}
 
-	virtual void InitializeOneImage(ImageSPtr lim) = 0;
+	virtual void preprocessOneImage(ImageSPtr im, bool isRef = false) = 0;
+	virtual void NormalizeOneImage(ImageSPtr im, bool isRef = false) = 0;
 
 	virtual double proximity(ImageSPtr a, ImageSPtr b) = 0;
 
-	virtual std::wstring FindBestMatch(ImageSPtr imRef)
+	virtual std::string FindBestMatch(ImageSPtr imRef)
 	{
-		
-		InitializeOneImage(imRef);
+		preprocessOneImage(imRef, true);
+		NormalizeOneImage(imRef, true);
 
-		double currentBestScore = 0;
 		ListOfImages::iterator im;
-		std::wstring bestImage;
+		std::string bestImage;
 		double grade, bestGrade = std::numeric_limits<double>::max();
 		for (im = m_listOfImages->begin(); im != m_listOfImages->end(); im++)
 		{

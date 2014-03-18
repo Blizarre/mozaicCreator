@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SSDMatcher.h"
+#include "Norm_LAB_SSDMatcher.h"
 #include "MatchingAlgorithm.h"
 
 
@@ -18,14 +18,14 @@ public:
 	// Default constructor
 	Configurator()
 	{
-		setReferenceImage(L"reference.bmp");
-		setOutputImage(L"output.bmp");
-		setDirectoryInputImages(L".\\images");
-		setReductionFactor(1);
+		setReferenceImage("reference.bmp");
+		setOutputImage("output.bmp");
+		setDirectoryInputImages(".\\images");
+		setReductionFactor(10);
 	}
 	
 	// Command line constructor
-	void fromCommandLine(int argc, WCHAR* argv[])
+	void fromCommandLine(int argc, char* argv[])
 	{
 		if(argc != 4)
 			throw std::string("Error, usage is <refImage> <directory> <reductionCoefficient>");
@@ -33,7 +33,7 @@ public:
 		setReferenceImage(argv[1]);
 		setDirectoryInputImages(argv[2]);
 		
-		setReductionFactor(_wtoi(argv[3]));
+		setReductionFactor(atoi(argv[3]));
 		
 		if(getReductionFactor() == 0)
 			throw std::string("Error : SSD reduction factor invalid, must be > 0");
@@ -45,8 +45,8 @@ public:
 
 protected:
 
-	PARAM(std::wstring, ReferenceImage);
-	PARAM(std::wstring, OutputImage);
-	PARAM(std::wstring, DirectoryInputImages);
+	PARAM(std::string, ReferenceImage);
+	PARAM(std::string, OutputImage);
+	PARAM(std::string, DirectoryInputImages);
 	PARAM(int,			ReductionFactor);
 };

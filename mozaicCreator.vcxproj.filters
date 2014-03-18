@@ -24,10 +24,16 @@
     <ClInclude Include="mozaicDefinitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SSDMatcher.h">
+    <ClInclude Include="CImg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CImg.h">
+    <ClInclude Include="Filesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Norm_LAB_SSDMatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Benchmarking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

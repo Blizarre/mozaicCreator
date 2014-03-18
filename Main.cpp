@@ -1,71 +1,31 @@
-
+/*
 // detect memory leak
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
 // end
+*/
 
 #include <string>
 #include <vector>
 #include "mozaicDefinitions.h"
 #include "Configurator.h"
+#include "Filesystem.h"
 
 #include <iostream>
-
-#define cimg_use_png
+#include <string>
 #include "CImg.h"
+#include "Benchmarking.h"
 
-std::vector<std::wstring> FindAllFiles(std::wstring directory)
+
+
+int main(int argc, char* argv[])
 {
-	std::vector<std::wstring> listOfFiles;
-	HANDLE dir;
-	WIN32_FIND_DATA file_data;
-
-	if ((dir = FindFirstFile( (directory + L"\\*") .c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-		return std::vector<std::wstring>();
-
-	do {
-		const std::wstring file_name = file_data.cFileName;
-		if (file_name.find(L".bmp", file_name.size() - 4) == std::string::npos) continue;
-		const std::wstring full_file_name = directory + L"\\" + file_name;
-		const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-
-		if (is_directory)
-			continue;
-
-		listOfFiles.push_back(full_file_name);
-	} while (FindNextFile(dir, &file_data));
-
-	FindClose(dir);
-
-	return listOfFiles;
-}
-
-// Ugly : convert a wide string to a single char string, for compatibility with CImg
-std::string wstring2string(std::wstring wstr)
-{
-	return std::string(wstr.begin(), wstr.end());
-}
-
-ListOfImagesSPtr loadAllImages(std::vector<std::wstring> listOfFiles)
-{
-	ListOfImagesSPtr lIm(new ListOfImages());
-	ImageSPtr image;
-	std::vector<std::wstring>::iterator fIt;
-	for (fIt = listOfFiles.begin(); fIt != listOfFiles.end(); fIt++)
-	{
-		std::string fileName = wstring2string(*fIt);
-		image = ImageSPtr(new Image(fileName.c_str()));
-		lIm->insert(std::make_pair(*fIt, image));
-	}
-	return lIm;
-}
-
-int main(int argc, WCHAR* argv[])
-{
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	Configurator config;
+	Filesystem fs;
+	Benchmarking bm;
 
 	std::cout << "Starting" << std::endl;
 
@@ -81,27 +41,27 @@ int main(int argc, WCHAR* argv[])
 
 	MatchingAlgorithmSPrt algo = config.getMatchingAlgorithm();
 
-	std::cout << "Loading images" << std::endl;
+	std::cout << "Loading images ... "; std::cout.flush(); 
+	bm.start();
+	ListOfImagesSPtr lIm = fs.loadImageDirectory(config.getDirectoryInputImages());
+	std::cout << lIm->size() << " done in " << bm.stopString() << std::endl;
 
-	ListOfImagesSPtr lIm = loadAllImages(FindAllFiles(config.getDirectoryInputImages()));
-
-	std::cout << lIm->size() << " images loaded" << std::endl;
-
+	std::cout << "Initialization ... "; std::cout.flush();
+	bm.start();
 	algo->Initialize(lIm);
+	std::cout << "done in " << bm.stopString() << std::endl;
 
-	std::cout << "Initialization done" << std::endl;
+	std::cout << "Reference image loading ... "; std::cout.flush();
+	bm.start();
+	ImageSPtr ref = fs.loadImage(config.getReferenceImage());
+	std::cout << "done in " << bm.stopString() << std::endl;
 
-	std::string refImName = wstring2string(config.getReferenceImage());
-	ImageSPtr ref( new Image(refImName.c_str()) );
+	std::cout << "Finding best match ... "; std::cout.flush();
+	bm.start();
+	std::string bestMatchImName = algo->FindBestMatch(ref);
+	std::cout << "done in " << bm.stopString() << std::endl;
 
-	std::cout << "Reference image loading done" << std::endl;
-
-	std::wstring bestMatch = algo->FindBestMatch(ref);
-	std::string bestMatchImName = wstring2string(bestMatch);
-
-	std::cout << "Best match found" << std::endl;
-
-	cimg_library::CImgDisplay refDisp(cimg_library::CImg<unsigned char>(refImName.c_str()), "Reference Image");
+	cimg_library::CImgDisplay refDisp(cimg_library::CImg<unsigned char>(config.getReferenceImage().c_str()), "Reference Image");
 	cimg_library::CImgDisplay bestDisp(cimg_library::CImg<unsigned char>(bestMatchImName.c_str()), "Best Match Image");
 
 	while (!refDisp.is_closed() && !bestDisp.is_closed()) {
