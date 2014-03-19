@@ -18,7 +18,7 @@ public:
 	// Default constructor
 	Configurator()
 	{
-		setReferenceImage("reference.bmp");
+		setReferenceImage("referenceFull.bmp");
 		setOutputImage("output.bmp");
 		setDirectoryInputImages(".\\images");
 		setReductionFactor(10);

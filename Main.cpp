@@ -18,6 +18,30 @@
 #include "Benchmarking.h"
 
 
+CharImageSPtr fillImage(ImageSPtr ref, ListOfImagesSPtr lIm, MatchingAlgorithmSPrt algo, Filesystem fs, int patchWidth, int patchHeight)
+{
+	CharImageSPtr result(new CharImage());
+	int nbPatchWidth = ref->width() / patchWidth;
+	int nbPatchHeight = ref->height() / patchHeight;
+
+	ref->crop(0, 0, patchWidth * nbPatchWidth, patchHeight * nbPatchHeight); 
+	
+	result->assign(*ref);
+
+	ImageSPtr extract(new Image());
+
+	for (int i = 0; i < nbPatchWidth; i++)
+	{
+		for (int j = 0; j < nbPatchHeight; j++)
+		{
+			*extract = ref->get_crop(i * patchWidth, j*patchHeight, (i + 1) * patchWidth, (j + 1)*patchHeight);
+			std::string bestMatchImName = algo->FindBestMatch(extract);
+			result->draw_image(i * patchWidth, j * patchHeight, *fs.loadCharImage(bestMatchImName));
+		}
+	}
+	
+	return result;
+}
 
 int main(int argc, char* argv[])
 {
@@ -46,6 +70,10 @@ int main(int argc, char* argv[])
 	ListOfImagesSPtr lIm = fs.loadImageDirectory(config.getDirectoryInputImages());
 	std::cout << lIm->size() << " done in " << bm.stopString() << std::endl;
 
+	//crappy
+	int patchWidth = lIm->cbegin()->second->width();
+	int patchHeight = lIm->cbegin()->second->height();
+
 	std::cout << "Initialization ... "; std::cout.flush();
 	bm.start();
 	algo->Initialize(lIm);
@@ -54,15 +82,18 @@ int main(int argc, char* argv[])
 	std::cout << "Reference image loading ... "; std::cout.flush();
 	bm.start();
 	ImageSPtr ref = fs.loadImage(config.getReferenceImage());
+
 	std::cout << "done in " << bm.stopString() << std::endl;
 
-	std::cout << "Finding best match ... "; std::cout.flush();
+	std::cout << "Filling reference image ... "; std::cout.flush();
 	bm.start();
-	std::string bestMatchImName = algo->FindBestMatch(ref);
+	CharImageSPtr result = fillImage(ref, lIm, algo, fs, patchWidth, patchHeight);
 	std::cout << "done in " << bm.stopString() << std::endl;
 
-	cimg_library::CImgDisplay refDisp(cimg_library::CImg<unsigned char>(config.getReferenceImage().c_str()), "Reference Image");
-	cimg_library::CImgDisplay bestDisp(cimg_library::CImg<unsigned char>(bestMatchImName.c_str()), "Best Match Image");
+	result->save("final.bmp");
+
+	cimg_library::CImgDisplay refDisp( *fs.loadCharImage(config.getReferenceImage()) , "Original Image");
+	cimg_library::CImgDisplay bestDisp(*result, "Composite image");
 
 	while (!refDisp.is_closed() && !bestDisp.is_closed()) {
 		refDisp.wait();

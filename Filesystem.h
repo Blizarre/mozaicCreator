@@ -13,6 +13,10 @@ public:
 		return ImageSPtr(new Image(strName.c_str()));
 	}
 
+	CharImageSPtr loadCharImage(std::string strName)
+	{
+		return CharImageSPtr(new CharImage(strName.c_str()));
+	}
 
 	ListOfImagesSPtr loadImageDirectory(std::string strDir)
 	{
