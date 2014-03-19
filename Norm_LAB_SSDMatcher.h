@@ -6,7 +6,7 @@ class SSDMatcher : public MatchingAlgorithm
 {
 public:
 
-	SSDMatcher(int reductionFactor)
+	SSDMatcher(int reductionFactor, bool autoremove) : MatchingAlgorithm(autoremove)
 	{
 		m_reductionFactor = reductionFactor;
 
@@ -22,8 +22,8 @@ public:
 		return im2.sum();
 	}
 
-	void updateMin(double & var, const double candidate) { if (candidate < var) var = candidate; }
-	void updateMax(double & var, const double candidate) { if (candidate > var) var = candidate; }
+	inline void updateMin(double & var, const double candidate) { if (candidate < var) var = candidate; }
+	inline void updateMax(double & var, const double candidate) { if (candidate > var) var = candidate; }
 
 	void updateMinMax(ImageSPtr im)
 	{

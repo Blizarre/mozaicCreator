@@ -30,12 +30,17 @@ protected:
 	{
 		ListOfImagesSPtr lIm(new ListOfImages());
 		ImageSPtr image;
+		CharImageSPtr charImage;
 		std::vector<std::wstring>::iterator fIt;
 		for (fIt = listOfFiles.begin(); fIt != listOfFiles.end(); fIt++)
 		{
 			std::string fileName = wstring2string(*fIt);
-			image = ImageSPtr(new Image(fileName.c_str()));
-			lIm->insert(std::make_pair( wstring2string(*fIt), image));
+			image = ImageSPtr( new Image(fileName.c_str()) );
+
+			fileName = wstring2string(*fIt);
+			charImage = CharImageSPtr( new CharImage(fileName.c_str()) );
+
+			lIm->push_back(std::make_pair(charImage, image));
 		}
 		return lIm;
 	}

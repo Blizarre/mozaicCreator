@@ -22,6 +22,8 @@ public:
 		setOutputImage("output.bmp");
 		setDirectoryInputImages(".\\images");
 		setReductionFactor(10);
+		setAutoRemove(false);
+		setCrop(5);
 	}
 	
 	// Command line constructor
@@ -40,13 +42,15 @@ public:
 	}
 	std::auto_ptr<MatchingAlgorithm> getMatchingAlgorithm()
 	{
-		return std::auto_ptr<MatchingAlgorithm>(new SSDMatcher(getReductionFactor()));
+		return std::auto_ptr<MatchingAlgorithm>(new SSDMatcher(getReductionFactor(), getAutoRemove()));
 	}
 
 protected:
 
-	PARAM(std::string, ReferenceImage);
-	PARAM(std::string, OutputImage);
-	PARAM(std::string, DirectoryInputImages);
+	PARAM(std::string,	ReferenceImage);
+	PARAM(std::string,	OutputImage);
+	PARAM(std::string,	DirectoryInputImages);
 	PARAM(int,			ReductionFactor);
+	PARAM(bool,			AutoRemove);
+	PARAM(unsigned int, Crop);
 };
