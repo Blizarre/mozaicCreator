@@ -21,9 +21,12 @@ public:
 		setReferenceImage("referenceFull.bmp");
 		setOutputImage("output.bmp");
 		setDirectoryInputImages(".\\images");
-		setReductionFactor(10);
-		setAutoRemove(false);
+		setReductionFactor(5);
+		setAutoRemove(true);
 		setCrop(5);
+		setFading(5);
+		setSplit(4);
+		setReduction(2);
 	}
 	
 	// Command line constructor
@@ -50,7 +53,10 @@ protected:
 	PARAM(std::string,	ReferenceImage);
 	PARAM(std::string,	OutputImage);
 	PARAM(std::string,	DirectoryInputImages);
-	PARAM(int,			ReductionFactor);
+	PARAM(int,			ReductionFactor); // Used during matching to speed up the computation
 	PARAM(bool,			AutoRemove);
 	PARAM(unsigned int, Crop);
+	PARAM(unsigned int, Fading);
+	PARAM(unsigned int, Split); // 0-> no split, 1-> split en 4, 2-> split en 4 + centre, 3 -> split en 4 + centre + entiere
+	PARAM(unsigned int, Reduction); // reduction coefficient of the size of the thumbnail
 };

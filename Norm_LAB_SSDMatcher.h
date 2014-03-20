@@ -15,21 +15,19 @@ public:
 	}
 
 	// on fait somme de la valeur absolue des différences
-	virtual double proximity(ImageSPtr a, ImageSPtr b)
+	virtual double proximity(Image & a, Image & b)
 	{
-		Image im2 = (*a - *b);
-		im2.sqr();
-		return im2.sum();
+		return a.MSE(b); // mean square error
 	}
 
 	inline void updateMin(double & var, const double candidate) { if (candidate < var) var = candidate; }
 	inline void updateMax(double & var, const double candidate) { if (candidate > var) var = candidate; }
 
-	void updateMinMax(ImageSPtr im)
+	void updateMinMax(Image & im)
 	{
-		Image L = im->get_channel(0);
-		Image a = im->get_channel(1);
-		Image b = im->get_channel(2);
+		Image L = im.get_channel(0);
+		Image a = im.get_channel(1);
+		Image b = im.get_channel(2);
 
 		updateMin(m_preProcess_L_min, L.min());
 		updateMax(m_preProcess_L_max, L.max());
@@ -41,13 +39,13 @@ public:
 		updateMax(m_preProcess_b_max, b.max());
 	}
 
-	void convertImage(ImageSPtr im)
+	void convertImage(Image & im)
 	{
-		im->RGBtoLab();
-		im->resize(im->width() / m_reductionFactor, im->height() / m_reductionFactor, 1, 3, 1);
+		im.RGBtoLab();
+		im.resize(im.width() / m_reductionFactor, im.height() / m_reductionFactor, 1, 3, 1);
 	}
 
-	void preprocessOneImage(ImageSPtr im, bool isRef)
+	void preprocessOneImage(Image & im, bool isRef)
 	{
 		convertImage(im);
 
@@ -55,7 +53,7 @@ public:
 			updateMinMax(im);
 	}
 
-	void NormalizeOneImage(ImageSPtr im, bool isRef) {
+	void NormalizeOneImage(Image & im, bool isRef) {
 		double L_span = m_preProcess_L_max + m_preProcess_L_min;
 		double a_span = m_preProcess_a_max + m_preProcess_a_min;
 		double b_span = m_preProcess_b_max + m_preProcess_b_min;
@@ -64,9 +62,9 @@ public:
 		double a_div = m_preProcess_a_max - m_preProcess_a_min;
 		double b_div = m_preProcess_b_max - m_preProcess_b_min;
 
-		Image L = im->get_shared_channel(0);
-		Image a = im->get_shared_channel(1);
-		Image b = im->get_shared_channel(2);
+		Image L = im.get_shared_channel(0);
+		Image a = im.get_shared_channel(1);
+		Image b = im.get_shared_channel(2);
 
 		L = (L - L_span / 2) / L_div;
 		a = (a - a_span / 2) / a_div;

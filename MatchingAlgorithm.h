@@ -22,22 +22,22 @@ public:
 
 		for (im = lim->begin(); im != lim->end(); im++)
 		{
-			preprocessOneImage(im->second);
+			preprocessOneImage(*im->second);
 		}
 		for (im = lim->begin(); im != lim->end(); im++)
 		{
-			NormalizeOneImage(im->second);
+			NormalizeOneImage(*im->second);
 		}
 
 		m_listOfImages = lim;
 	}
 
-	virtual void preprocessOneImage(ImageSPtr im, bool isRef = false) = 0;
-	virtual void NormalizeOneImage(ImageSPtr im, bool isRef = false) = 0;
+	virtual void preprocessOneImage(Image & im, bool isRef = false) = 0;
+	virtual void NormalizeOneImage(Image & im, bool isRef = false) = 0;
 
-	virtual double proximity(ImageSPtr a, ImageSPtr b) = 0;
+	virtual double proximity(Image & a, Image & b) = 0;
 
-	virtual CharImageSPtr FindBestMatch(ImageSPtr imRef)
+	virtual CharImageSPtr FindBestMatch(Image &  imRef)
 	{
 		preprocessOneImage(imRef, true);
 		NormalizeOneImage(imRef, true);
@@ -48,18 +48,19 @@ public:
 		double grade, bestGrade = std::numeric_limits<double>::max();
 		for (im = m_listOfImages->begin(); im != m_listOfImages->end(); im++)
 		{
-			grade = proximity(im->second, imRef);
+			grade = proximity(*im->second, imRef);
 			if (grade < bestGrade)
 			{
 				bestPair = im;
 				bestGrade = grade;
 			}
 		}
-		if(m_autoRemove) 
-			m_listOfImages->erase(bestPair);
-		
+
 		result = bestPair->first;
 
+		if (m_autoRemove)
+			m_listOfImages->erase(bestPair);
+			
 		return result;
 	}
 

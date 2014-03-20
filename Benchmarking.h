@@ -6,9 +6,16 @@
 class Benchmarking
 {
 public:
-	Benchmarking() { start(); }
+	Benchmarking() { }
 
-	DWORD start() { 
+	DWORD start() {
+		return start("");
+	}
+
+	DWORD start(std::string message) { 
+		int padding = message.length() - 30;
+		for (int i = 0; i < padding; i++) message += " ";
+		std::cout << message << " : "; std::cout.flush();
 		m_previousTime = GetTickCount(); 
 		m_totalTime = 0;
 		return m_previousTime; 
@@ -22,13 +29,21 @@ public:
 		return m_totalTime;
 	}
 
-	std::string stopString()
+	float stopString(int number)
 	{
-		char tmp[100];
 		stop();
 		float timeInSecond = ((float)m_totalTime) / 1000.0f;
-		sprintf_s(tmp, 100, "%.2fs.", timeInSecond);
-		return std::string(tmp);
+		char tmp[100];
+		std::cout << timeInSecond << "s. - " << number << " items" << std::endl;;
+		return m_totalTime;
+	}
+
+	float stopString()
+	{
+		stop();
+		float timeInSecond = ((float)m_totalTime) / 1000.0f;
+		std::cout << timeInSecond << "s." << std::endl;
+		return m_totalTime;
 	}
 
 protected:
