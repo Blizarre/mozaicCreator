@@ -38,8 +38,8 @@ ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 	ImageSPtr tmp;
 	CharImageSPtr cTmp;
 
-	int patch_width =  originales->begin()->first->width() / 2;
-	int patch_height = originales->begin()->first->height() / 2;
+	int patch_width =  originales->begin()->cim->width() / 2;
+	int patch_height = originales->begin()->cim->height() / 2;
 
 	ListOfImagesSPtr splitted(new ListOfImages());
 
@@ -56,41 +56,41 @@ ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 		{
 
 			// upper left
-			tmp = ImageSPtr(new Image(im->second->get_crop(0, 0, patch_width -1, patch_height -1)));
-			cTmp = CharImageSPtr(new CharImage(im->first->get_crop(0, 0, patch_width -1, patch_height -1)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->get_crop(0, 0, patch_width - 1, patch_height - 1)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->get_crop(0, 0, patch_width -1, patch_height -1)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 
 			// upper right
-			tmp = ImageSPtr(new Image(im->second->get_crop(patch_width, 0, 2 * patch_width -1, patch_height -1)));
-			cTmp = CharImageSPtr(new CharImage(im->first->get_crop(patch_width, 0, 2 * patch_width -1, patch_height -1)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->get_crop(patch_width, 0, 2 * patch_width - 1, patch_height - 1)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->get_crop(patch_width, 0, 2 * patch_width - 1, patch_height - 1)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 
 			// lower left
-			tmp = ImageSPtr(new Image(im->second->get_crop(0, patch_height, patch_width -1, 2 * patch_height -1)));
-			cTmp = CharImageSPtr(new CharImage(im->first->get_crop(0, patch_height, patch_width -1, 2 * patch_height -1)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->get_crop(0, patch_height, patch_width - 1, 2 * patch_height - 1)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->get_crop(0, patch_height, patch_width - 1, 2 * patch_height - 1)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 
 			// lower right
-			tmp = ImageSPtr(new Image(im->second->get_crop(patch_width, patch_height, 2 * patch_width -1, 2 * patch_height -1)));
-			cTmp = CharImageSPtr(new CharImage(im->first->get_crop(patch_width, patch_height, 2 * patch_width -1, 2 * patch_height -1)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->get_crop(patch_width, patch_height, 2 * patch_width - 1, 2 * patch_height - 1)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->get_crop(patch_width, patch_height, 2 * patch_width - 1, 2 * patch_height - 1)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 
 		}
 
 		if (split > 1)
 		{
 			// center
-			tmp = ImageSPtr(new Image(im->second->get_crop(patch_width / 2, patch_height / 2, patch_width + patch_width / 2 -1, patch_height + patch_height / 2 -1)));
-			cTmp = CharImageSPtr(new CharImage(im->first->get_crop(patch_width / 2, patch_height / 2, patch_width + patch_width / 2 -1, patch_height + patch_height / 2 -1)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->get_crop(patch_width / 2, patch_height / 2, patch_width + patch_width / 2 -1, patch_height + patch_height / 2 -1)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->get_crop(patch_width / 2, patch_height / 2, patch_width + patch_width / 2 - 1, patch_height + patch_height / 2 - 1)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 		}
 
 		if (split > 2)
 		{
 			// all
-			tmp = ImageSPtr(new Image(im->second->resize(patch_width, patch_height)));
-			cTmp = CharImageSPtr(new CharImage(im->first->resize(patch_width, patch_height)));
-			splitted->push_back(std::make_pair(cTmp, tmp));
+			tmp = ImageSPtr(new Image(im->fim->resize(patch_width, patch_height)));
+			cTmp = CharImageSPtr(new CharImage(im->cim->resize(patch_width, patch_height)));
+			splitted->push_back(Thumbnail(cTmp, tmp));
 		}
 	}
 
@@ -139,8 +139,8 @@ Image createMask(int width, int height, int fading)
 
 void cropAndResize(ListOfImagesSPtr lIm, unsigned int crop, unsigned int reduction)
 {
-	int newWidth = lIm->begin()->first->width() / reduction;
-	int newHeight = lIm->begin()->first->height() / reduction;
+	int newWidth = lIm->begin()->cim->width() / reduction;
+	int newHeight = lIm->begin()->cim->height() / reduction;
 
 	ListOfImages::iterator it;
 
@@ -153,16 +153,16 @@ void cropAndResize(ListOfImagesSPtr lIm, unsigned int crop, unsigned int reducti
 
 		if (crop != 0)
 		{
-			it->first->crop(crop, crop, it->first->width() - crop, it->first->height() - crop);
-			it->second->crop(crop, crop, it->second->width() - crop, it->second->height() - crop);
+			it->cim->crop(crop, crop, it->cim->width() - crop, it->cim->height() - crop);
+			it->fim->crop(crop, crop, it->fim->width() - crop, it->fim->height() - crop);
 		}
 
-		it->first->resize(newWidth, newHeight);
-		it->second->resize(newWidth, newHeight);
+		it->cim->resize(newWidth, newHeight);
+		it->fim->resize(newWidth, newHeight);
 	}
 }
 
-CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs, int patchWidth, int patchHeight, unsigned int fading)
+CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs, int patchWidth, int patchHeight, unsigned int fading, float minDistance)
 {
 	CharImageSPtr result(new CharImage());
 	
@@ -194,8 +194,8 @@ CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs
 			if ((nbThumbWidth * j + i) % 100 == 0) std::cout << i << "," << j << " : " << 100.0 * (nbThumbWidth * (float)j + (float)i) / ((float)nbThumbWidth * nbThumbHeight) << "%" << std::endl;
 
 			extract = ref->get_crop(i * thumbWidth, j*thumbHeight, (i + 1) * thumbWidth + 2 * fading - 1, (j + 1)*thumbHeight + 2 * fading - 1);
-			bestMatchIm = algo->FindBestMatch(extract);
-
+			bestMatchIm = algo->FindBestMatch(extract, i, j, minDistance);
+			
 			if (fading != 0)
 				result->draw_image(i * thumbWidth, j*thumbHeight, *bestMatchIm, mask, 1.0F, (float)fading);
 			else
@@ -239,7 +239,7 @@ int main(int argc, char* argv[])
 		bm.stopString(lIm->size());
 
 		bm.start("Cropping and resizing images");
-		cropAndResize(lIm, config.getCrop(), config.getReduction());
+		cropAndResize(lIm, config.getCrop(), config.getReductionThumbnail());
 		bm.stopString();
 
 		bm.start("Splitting images            ");
@@ -247,8 +247,8 @@ int main(int argc, char* argv[])
 		bm.stopString(lThumbnail->size());
 
 		//crappy
-		patchWidth = lThumbnail->cbegin()->first->width();
-		patchHeight = lThumbnail->cbegin()->first->height();
+		patchWidth = lThumbnail->cbegin()->cim->width();
+		patchHeight = lThumbnail->cbegin()->cim->height();
 
 		bm.start("Initializating database     ");
 		algo->Initialize(lThumbnail);
@@ -262,7 +262,7 @@ int main(int argc, char* argv[])
 	         
 	bm.start("Filling reference image     ");
 	// Add threading (Process.h) on fillImage
-	CharImageSPtr result = fillImage(ref, algo, fs, patchWidth, patchHeight, config.getFading());
+	CharImageSPtr result = fillImage(ref, algo, fs, patchWidth, patchHeight, config.getFading(), config.getMindistance());
 	bm.stopString();
 
 	result->save("final.bmp");

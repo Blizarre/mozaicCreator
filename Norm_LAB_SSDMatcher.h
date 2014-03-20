@@ -17,7 +17,11 @@ public:
 	// on fait somme de la valeur absolue des différences
 	virtual double proximity(Image & a, Image & b)
 	{
-		return a.MSE(b); // mean square error
+		Image tmp = a - b;
+		//tmp.abs();
+		tmp.sqr();
+		return tmp.sum();
+		//return a.MSE(b); // mean square error
 	}
 
 	inline void updateMin(double & var, const double candidate) { if (candidate < var) var = candidate; }

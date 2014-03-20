@@ -11,10 +11,18 @@ typedef std::shared_ptr<CharImage> CharImageSPtr;
 typedef CharImage* CharImagePtr;
 
 
-typedef cimg_library::CImg<double> Image;
+typedef cimg_library::CImg<float> Image;
 typedef std::shared_ptr<Image> ImageSPtr;
 typedef Image* ImagePtr;
 
-typedef std::vector<std::pair<CharImageSPtr, ImageSPtr>> ListOfImages;
-typedef std::shared_ptr<ListOfImages> ListOfImagesSPtr;
 
+struct Thumbnail
+{
+	Thumbnail(CharImageSPtr _cim, ImageSPtr _fim) : fim(_fim), cim(_cim) { }
+	ImageSPtr fim;
+	CharImageSPtr cim;
+	std::vector<std::pair<int, int>> pos;
+};
+
+typedef std::vector<Thumbnail> ListOfImages;
+typedef std::shared_ptr<ListOfImages> ListOfImagesSPtr;

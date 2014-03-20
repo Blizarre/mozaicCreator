@@ -22,11 +22,11 @@ public:
 
 		for (im = lim->begin(); im != lim->end(); im++)
 		{
-			preprocessOneImage(*im->second);
+			preprocessOneImage(*im->fim);
 		}
 		for (im = lim->begin(); im != lim->end(); im++)
 		{
-			NormalizeOneImage(*im->second);
+			NormalizeOneImage(*im->fim);
 		}
 
 		m_listOfImages = lim;
@@ -37,7 +37,12 @@ public:
 
 	virtual double proximity(Image & a, Image & b) = 0;
 
-	virtual CharImageSPtr FindBestMatch(Image &  imRef)
+	float distance(const std::pair<int, int> & a, const std::pair<int, int> & b)
+	{
+		return (a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second);
+	}
+
+	virtual CharImageSPtr FindBestMatch(Image &  imRef, int posX, int posY, float minDist)
 	{
 		preprocessOneImage(imRef, true);
 		NormalizeOneImage(imRef, true);
@@ -48,19 +53,33 @@ public:
 		double grade, bestGrade = std::numeric_limits<double>::max();
 		for (im = m_listOfImages->begin(); im != m_listOfImages->end(); im++)
 		{
-			grade = proximity(*im->second, imRef);
+			grade = proximity(*im->fim, imRef);
 			if (grade < bestGrade)
 			{
-				bestPair = im;
-				bestGrade = grade;
+				bool ok = true;
+				if (minDist > 0)
+				{
+					for (auto it = im->pos.cbegin(); it != im->pos.cend(); it++)
+					{
+						if (distance(*it, std::make_pair(posX, posY)) < minDist * minDist)
+							ok = false;
+					}
+				}
+				if (ok)
+				{
+					bestPair = im;
+					bestGrade = grade;
+				}
 			}
 		}
 
-		result = bestPair->first;
+		bestPair->pos.push_back(std::make_pair(posX, posY));
+
+		result = bestPair->cim;
 
 		if (m_autoRemove)
 			m_listOfImages->erase(bestPair);
-			
+
 		return result;
 	}
 

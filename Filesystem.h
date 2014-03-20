@@ -40,7 +40,7 @@ protected:
 			fileName = wstring2string(*fIt);
 			charImage = CharImageSPtr( new CharImage(fileName.c_str()) );
 
-			lIm->push_back(std::make_pair(charImage, image));
+			lIm->push_back(Thumbnail(charImage, image));
 		}
 		return lIm;
 	}

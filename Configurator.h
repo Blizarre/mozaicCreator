@@ -22,11 +22,12 @@ public:
 		setOutputImage("output.bmp");
 		setDirectoryInputImages(".\\images");
 		setReductionFactor(5);
-		setAutoRemove(true);
+		setAutoRemove(false);
 		setCrop(5);
-		setFading(5);
+		setFading(3);
 		setSplit(4);
-		setReduction(2);
+		setReductionThumbnail(2);
+		setMindistance(4.0f);
 	}
 	
 	// Command line constructor
@@ -58,5 +59,6 @@ protected:
 	PARAM(unsigned int, Crop);
 	PARAM(unsigned int, Fading);
 	PARAM(unsigned int, Split); // 0-> no split, 1-> split en 4, 2-> split en 4 + centre, 3 -> split en 4 + centre + entiere
-	PARAM(unsigned int, Reduction); // reduction coefficient of the size of the thumbnail
+	PARAM(unsigned int, ReductionThumbnail); // reduction coefficient of the size of the thumbnail
+	PARAM(float, Mindistance); // min distance between two same images
 };
