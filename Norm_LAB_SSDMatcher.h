@@ -18,10 +18,8 @@ public:
 	virtual double proximity(Image & a, Image & b)
 	{
 		Image tmp = a - b;
-		//tmp.abs();
 		tmp.sqr();
 		return tmp.sum();
-		//return a.MSE(b); // mean square error
 	}
 
 	inline void updateMin(double & var, const double candidate) { if (candidate < var) var = candidate; }

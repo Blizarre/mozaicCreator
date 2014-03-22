@@ -21,25 +21,29 @@ public:
 		setReferenceImage("referenceFull.bmp");
 		setOutputImage("output.bmp");
 		setDirectoryInputImages(".\\images");
-		setReductionFactor(5);
+		setReductionFactor(10);
 		setAutoRemove(false);
 		setCrop(5);
 		setFading(3);
 		setSplit(4);
-		setReductionThumbnail(2);
+		setReductionThumbnail(4);
 		setMindistance(4.0f);
 	}
 	
 	// Command line constructor
 	void fromCommandLine(int argc, char* argv[])
 	{
-		if(argc != 4)
-			throw std::string("Error, usage is <refImage> <directory> <reductionCoefficient>");
+		if(argc != 6)
+			throw std::string("Error, usage is <refImage> <directory> <speedUpCoefficient> <Fading> <reductionThumb>");
 
 		setReferenceImage(argv[1]);
 		setDirectoryInputImages(argv[2]);
 		
 		setReductionFactor(atoi(argv[3]));
+
+		setFading(atoi(argv[4]));
+
+		setReductionThumbnail(atoi(argv[5]));
 		
 		if(getReductionFactor() == 0)
 			throw std::string("Error : SSD reduction factor invalid, must be > 0");
