@@ -17,3 +17,5 @@ The images from the gallery above were made in in less than 30 seconds !
 Warning : should be run on x64 computer, it can fill up RAM very quickly, and support bmp images only for now.
 
 Currently the source code is for visual studio 2013. Very easy to port on linux, the only windows-only parts are the filesystem module and the use of “#pragma once”
+
+see: http://www.marache.net/mozaic-creator/
