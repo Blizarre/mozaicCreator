@@ -26,7 +26,7 @@ public:
 		setCrop(5);
 		setFading(3);
 		setSplit(4);
-		setReductionThumbnail(4);
+		setReductionThumbnail(2);
 		setMindistance(4.0f);
 	}
 	
@@ -34,7 +34,7 @@ public:
 	void fromCommandLine(int argc, char* argv[])
 	{
 		if(argc != 6)
-			throw std::string("Error, usage is <refImage> <directory> <speedUpCoefficient> <Fading> <reductionThumb>");
+			throw std::string("Error, usage is <refImage> <directory> <ReductionFactor> <Fading> <reductionThumb>");
 
 		setReferenceImage(argv[1]);
 		setDirectoryInputImages(argv[2]);
@@ -58,11 +58,11 @@ protected:
 	PARAM(std::string,	ReferenceImage);
 	PARAM(std::string,	OutputImage);
 	PARAM(std::string,	DirectoryInputImages);
-	PARAM(int,			ReductionFactor); // Used during matching to speed up the computation
-	PARAM(bool,			AutoRemove);
-	PARAM(unsigned int, Crop);
+	PARAM(int,			ReductionFactor); // Used during matching to speed up the computation, have no impact on the final image thumbnail size
+	PARAM(bool,			AutoRemove); // automatically remove any thumbnail as soon as it has been used, to avoir repetition.
+	PARAM(unsigned int, Crop); // Crop all small images of "Crop" pixels, in case some have borders
 	PARAM(unsigned int, Fading);
 	PARAM(unsigned int, Split); // 0-> no split, 1-> split en 4, 2-> split en 4 + centre, 3 -> split en 4 + centre + entiere
-	PARAM(unsigned int, ReductionThumbnail); // reduction coefficient of the size of the thumbnail
+	PARAM(unsigned int, ReductionThumbnail); // reduction coefficient of the size of the thumbnail, reduce the size of thumbnails on the final image
 	PARAM(float, Mindistance); // min distance between two same images
 };

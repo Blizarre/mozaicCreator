@@ -19,9 +19,9 @@ typedef Image* ImagePtr;
 struct Thumbnail
 {
 	Thumbnail(CharImageSPtr _cim, ImageSPtr _fim) : fim(_fim), cim(_cim) { }
-	ImageSPtr fim;
-	CharImageSPtr cim;
-	std::vector<std::pair<int, int>> pos;
+	ImageSPtr fim; // Lab float image, the image on wich the matching will be make
+	CharImageSPtr cim; // char RGB image, the image wich will be copied to the result image
+	std::vector<std::pair<int, int>> pos; // all the position in the final image where the thumbnail has been used
 };
 
 typedef std::vector<Thumbnail> ListOfImages;

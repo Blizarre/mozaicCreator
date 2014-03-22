@@ -61,6 +61,7 @@ public:
 				{
 					for (auto it = im->pos.cbegin(); it != im->pos.cend(); it++)
 					{
+						// Do not take a picture if it has already been used in a radis of minDist
 						if (distance(*it, std::make_pair(posX, posY)) < minDist * minDist)
 							ok = false;
 					}

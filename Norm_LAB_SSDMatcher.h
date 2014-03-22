@@ -14,7 +14,7 @@ public:
 		m_preProcess_L_max = m_preProcess_a_max = m_preProcess_b_max = std::numeric_limits<double>::min();
 	}
 
-	// on fait somme de la valeur absolue des différences
+	// Sum of square difference
 	virtual double proximity(Image & a, Image & b)
 	{
 		Image tmp = a - b;

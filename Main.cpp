@@ -17,6 +17,7 @@
 #include "CImg.h"
 #include "Benchmarking.h"
 
+// Show an images. Useful for debugging
 template<class T>
 void debug_showImage(T im, bool normalization = false, const char* caption = "")
 {
@@ -31,6 +32,8 @@ void debug_showImage(T im, bool normalization = false, const char* caption = "")
 };
 
 
+// Split images into smaller thumbnails, if needed. This is useful if you have a relatively small et of images
+// This the Split parameter
 ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 {
 	ListOfImages::iterator im;
@@ -42,8 +45,6 @@ ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 	int patch_height = originales->begin()->cim->height() / 2;
 
 	ListOfImagesSPtr splitted(new ListOfImages());
-
-
 
 	for (im = originales->begin(); im != originales->end(); im++)
 	{
@@ -97,7 +98,7 @@ ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 	return splitted;
 }
 
-// Ugly, but works ...
+// Create the mask used to make a smooth transition between images
 Image createMask(int width, int height, int fading)
 {
 	CharImage mask(width, height, 1, 1, fading);
@@ -137,6 +138,8 @@ Image createMask(int width, int height, int fading)
 	return mask;
 }
 
+
+
 void cropAndResize(ListOfImagesSPtr lIm, unsigned int crop, unsigned int reduction)
 {
 	int newWidth = lIm->begin()->cim->width() / reduction;
@@ -162,6 +165,10 @@ void cropAndResize(ListOfImagesSPtr lIm, unsigned int crop, unsigned int reducti
 	}
 }
 
+/* This is the main function : It takes a reference image, fading is the transition distance between patches (or thumbnails), and minDistance is the minimal distance between two
+ same thumbnails in the final image to avoid repetition.
+ It will try to match any (patchWidth, patchHeight) part of the image with a thumbnail
+*/ 
 CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs, int patchWidth, int patchHeight, unsigned int fading, float minDistance)
 {
 	CharImageSPtr result(new CharImage());
@@ -208,8 +215,6 @@ CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs
 
 int main(int argc, char* argv[])
 {
-	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 	Configurator config;
 	Filesystem fs;
 	Benchmarking bm;
@@ -261,7 +266,6 @@ int main(int argc, char* argv[])
 
 	         
 	bm.start("Filling reference image     ");
-	// Add threading (Process.h) on fillImage
 	CharImageSPtr result = fillImage(ref, algo, fs, patchWidth, patchHeight, config.getFading(), config.getMindistance());
 	bm.stopString();
 
