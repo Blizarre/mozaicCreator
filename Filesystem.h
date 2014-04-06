@@ -32,6 +32,8 @@ protected:
 		ImageSPtr image;
 		CharImageSPtr charImage;
 		std::vector<std::wstring>::iterator fIt;
+		int sizeX = -1, sizeY = -1;
+
 		for (fIt = listOfFiles.begin(); fIt != listOfFiles.end(); fIt++)
 		{
 			std::string fileName = wstring2string(*fIt);
@@ -39,6 +41,12 @@ protected:
 
 			fileName = wstring2string(*fIt);
 			charImage = CharImageSPtr( new CharImage(fileName.c_str()) );
+
+			if (sizeX == -1) sizeX = charImage->width();
+			if (sizeY == -1) sizeY = charImage->height();
+
+			if (sizeX != charImage->width() || sizeY != charImage->height())
+				throw std::string("Image " + fileName + " size is different from the others.");
 
 			lIm->push_back(Thumbnail(charImage, image));
 		}

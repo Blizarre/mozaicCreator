@@ -32,7 +32,7 @@ void debug_showImage(T im, bool normalization = false, const char* caption = "")
 };
 
 
-// Split images into smaller thumbnails, if needed. This is useful if you have a relatively small et of images
+// Split images into smaller tiles, if needed. This is useful if you have a relatively small et of images
 // This the Split parameter
 ListOfImagesSPtr splitImages(ListOfImagesSPtr originales, unsigned int split)
 {
@@ -165,16 +165,16 @@ void cropAndResize(ListOfImagesSPtr lIm, unsigned int crop, unsigned int reducti
 	}
 }
 
-/* This is the main function : It takes a reference image, fading is the transition distance between patches (or thumbnails), and minDistance is the minimal distance between two
- same thumbnails in the final image to avoid repetition.
- It will try to match any (patchWidth, patchHeight) part of the image with a thumbnail
+/* This is the main function : It takes a reference image, fading is the transition distance between tiles, and minDistance is the minimal distance between two
+ same tiles in the final image to avoid repetition.
+ It will try to match any (tileWidth, tileHeight) part of the image with a tile
 */ 
-CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs, int patchWidth, int patchHeight, unsigned int fading, float minDistance)
+CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs, int tileWidth, int tileHeight, unsigned int fading, float minDistance)
 {
 	CharImageSPtr result(new CharImage());
 	
-	int thumbWidth = patchWidth - 2 * fading;
-	int thumbHeight = patchHeight - 2 * fading;
+	int thumbWidth = tileWidth - 2 * fading;
+	int thumbHeight = tileHeight - 2 * fading;
 
 	int nbThumbWidth = ref->width() / thumbWidth;
 	int nbThumbHeight = ref->height() / thumbHeight;
@@ -183,7 +183,7 @@ CharImageSPtr fillImage(ImageSPtr ref, MatchingAlgorithmSPrt algo, Filesystem fs
 
 	CharImage mask;
 	if (fading > 0)
-		mask = createMask(patchWidth, patchHeight, fading);
+		mask = createMask(tileWidth, tileHeight, fading);
 
 	result->assign(*ref);
 
@@ -219,64 +219,76 @@ int main(int argc, char* argv[])
 	Filesystem fs;
 	Benchmarking bm;
 
-	std::cout << "Starting" << std::endl;
+	try
+	{
+		std::cout << "Starting" << std::endl;
 
-	try {
-		if (argc != 1)
-			config.fromCommandLine(argc, argv);
+		config.fromCommandLine(argc, argv);
+
+
+		std::cout << config.getConfig();
+
+		MatchingAlgorithmSPrt algo = config.getMatchingAlgorithm();
+
+		ListOfImagesSPtr lThumbnail;
+
+		int tileWidth;
+		int tileHeight;
+		{
+			// Deletion of lIm at the end of the block
+			bm.start("Loading tiles               ");
+			ListOfImagesSPtr lIm = fs.loadImageDirectory(config.getDirectoryInputTiles());
+			bm.stopString(lIm->size());
+
+			if (lIm->size() == 0)
+			{
+				std::cout << "No tiles found in directory " << config.getDirectoryInputTiles() << std::endl;
+				std::cout << "FYI, .bmp only, all with the _exact_ same size" << std::endl;
+				return -1;
+			}
+
+			bm.start("Cropping and resizing images");
+			cropAndResize(lIm, config.getCrop(), config.getReductionTiles());
+			bm.stopString();
+
+			bm.start("Splitting images            ");
+			ListOfImagesSPtr lThumbnail = splitImages(lIm, config.getSplit());
+			bm.stopString(lThumbnail->size());
+
+			//crappy
+			tileWidth = lThumbnail->cbegin()->cim->width();
+			tileHeight = lThumbnail->cbegin()->cim->height();
+
+			bm.start("Initializating database     ");
+			algo->Initialize(lThumbnail);
+			bm.stopString();
+		}
+
+		bm.start("Reference image loading     ");
+		ImageSPtr ref = fs.loadImage(config.getReferenceImage());
+		bm.stopString();
+
+
+		bm.start("Filling reference image     ");
+		CharImageSPtr result = fillImage(ref, algo, fs, tileWidth, tileHeight, config.getFading(), config.getMindistance());
+		bm.stopString();
+
+		result->save("final.bmp");
+
+		cimg_library::CImgDisplay refDisp(*fs.loadCharImage(config.getReferenceImage()), "Original Image");
+		cimg_library::CImgDisplay bestDisp(*result, "Composite image");
+
+		while (!refDisp.is_closed() && !bestDisp.is_closed()) {
+			refDisp.wait();
+		}
 	}
 	catch (std::string err)
 	{
-		std::cout << "Error during arguments parsing :" << err << std::endl;
-		return -1;
+		std::cout << "Error : " << err << std::endl;
 	}
-
-	MatchingAlgorithmSPrt algo = config.getMatchingAlgorithm();
-
-	ListOfImagesSPtr lThumbnail;
-
-	int patchWidth;
-	int patchHeight;
+	catch (cimg_library::CImgIOException exc)
 	{
-		// Deletion of lIm at the end of the block
-		bm.start("Loading images              ");
-		ListOfImagesSPtr lIm = fs.loadImageDirectory(config.getDirectoryInputImages());
-		bm.stopString(lIm->size());
-
-		bm.start("Cropping and resizing images");
-		cropAndResize(lIm, config.getCrop(), config.getReductionThumbnail());
-		bm.stopString();
-
-		bm.start("Splitting images            ");
-		ListOfImagesSPtr lThumbnail = splitImages(lIm, config.getSplit());
-		bm.stopString(lThumbnail->size());
-
-		//crappy
-		patchWidth = lThumbnail->cbegin()->cim->width();
-		patchHeight = lThumbnail->cbegin()->cim->height();
-
-		bm.start("Initializating database     ");
-		algo->Initialize(lThumbnail);
-		bm.stopString();
+		std::cout << "Error in the image module : " << exc.what();
 	}
-	         
-	bm.start("Reference image loading     ");
-	ImageSPtr ref = fs.loadImage(config.getReferenceImage());
-	bm.stopString();
-
-	         
-	bm.start("Filling reference image     ");
-	CharImageSPtr result = fillImage(ref, algo, fs, patchWidth, patchHeight, config.getFading(), config.getMindistance());
-	bm.stopString();
-
-	result->save("final.bmp");
-
-	cimg_library::CImgDisplay refDisp(*fs.loadCharImage(config.getReferenceImage()), "Original Image");
-	cimg_library::CImgDisplay bestDisp(*result, "Composite image");
-
-	while (!refDisp.is_closed() && !bestDisp.is_closed()) {
-		refDisp.wait();
-	}
-
 	return 0;
 }
