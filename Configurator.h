@@ -87,7 +87,7 @@ protected:
 	PARAM(bool,			AutoRemove); // automatically remove any thumbnail as soon as it has been used, to avoir repetition.
 	PARAM(unsigned int, Crop); // Crop all small images of "Crop" pixels, in case some have borders
 	PARAM(unsigned int, Fading);
-	PARAM(unsigned int, Split); // 0-> no split, 1-> split en 4, 2-> split en 4 + centre, 3 -> split en 4 + centre + entiere
+	PARAM(unsigned int, Split); // 0-> no split, 1-> split in 4, 2-> split in 4 + center, 3 -> split in 4 + center + whole image
 	PARAM(unsigned int, ReductionTiles); // reduction coefficient of the size of the tiles, reduce the size of tiles on the final image (origSize{X,Y}/ReductionTiles)
 	PARAM(float, Mindistance); // min distance between two same images
 };

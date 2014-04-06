@@ -20,12 +20,13 @@ Currently the source code is for visual studio 2013. Very easy to port on linux,
 
 Usage :  
 
-mozaicCreator "refImage" "directory" "ReductionFactor" "Fading" "reductionThumb"
+mozaicCreator "refImage" "tilesDirectory" "ReductionFactor" "Fading" "reductionTile" "splittingTiles"
   - refImage : Reference Image (bmp)
-  - directory : directory containing all the thumbnails images, all with the same size (bmp)
-  - reductionFactor : used during matching to speed up the computation, have no impact on the final image thumbnail size
-  - fading : smooth the interface between the thumbnails in the final image (overlap in pixels)
-  - reductionThumb : reduction coefficient of the thumbnail, reduce the size of thumbnails on the final image
+  - tilesDirectory : directory containing all the tiles images, all with the same size (bmp)
+  - reductionFactor : used during matching to speed up the computation, have no impact on the final image tile size
+  - fading : smooth the interface between the tiles in the final image (overlap in pixels)
+  - reductionTile : reduction coefficient of the tile, reduce the size of tiles on the final image
+  - splittingTiles : split tilesto increase sample size : 0-> original tile, 1-> split in 4, 2-> split in 4 + center, 3 -> split in 4 + center + whole image
 
 See Configurator.h for more informations
 
