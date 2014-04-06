@@ -18,4 +18,15 @@ Warning : should be run on x64 computer, it can fill up RAM very quickly, and su
 
 Currently the source code is for visual studio 2013. Very easy to port on linux, the only windows-only parts are the filesystem module and the use of "#pragma once"
 
+Usage :  
+
+mozaicCreator "refImage" "directory" "ReductionFactor" "Fading" "reductionThumb"
+  - refImage : Reference Image (bmp)
+  - directory : directory containing all the thumbnails images, all with the same size (bmp)
+  - reductionFactor : used during matching to speed up the computation, have no impact on the final image thumbnail size
+  - fading : smooth the interface between the thumbnails in the final image (overlap in pixels)
+  - reductionThumb : reduction coefficient of the thumbnail, reduce the size of thumbnails on the final image
+
+See Configurator.h for more informations
+
 see: http://www.marache.net/mozaic-creator/
