@@ -4,6 +4,11 @@
 #include <string>
 #include "mozaicDefinitions.h"
 
+/**
+ * This class is a very quck hack to be able to read pictures on the disk
+ * After re-reading it, I feel sick to have made something like this... The string / wstring conversion
+ * is a nonsense. If one day I work on this project again, I'll have to redo it from scratch.'
+ **/
 class Filesystem
 {
 public:
